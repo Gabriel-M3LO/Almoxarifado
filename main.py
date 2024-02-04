@@ -1,6 +1,13 @@
 import openpyxl
 import tkinter as tk
 from tkinter import ttk
+import pandas as pd
+
+
+#Pandas
+tb = pd.read_excel('tabelas.xlsx')
+TpMaterial = ["Escritório", "Penso", "Limpeza"]
+
 
 #backend
 def load_data():
@@ -12,7 +19,10 @@ def load_data():
     print(list_values)
 
     for col_name in cols:
-        treeview.heading(col_name, text=)
+        treeview.heading(col_name, text=col_name)
+
+    for values_tuple in list_values[0:]:
+        treeview.insert('',tk.END, values = values_tuple[0:])
 def insert_data():
     nome = name_entry.get()
     qnt = int(num_spinbox.get())
@@ -31,12 +41,15 @@ def insert_data():
     treeview.insert('', tk.END, values=row_values)
 
     #Clear form
+    name_entry.delete(0,'end')
+    name_entry.insert(0, "name")
 
-def mode_theme():
-    if mode_switch.instate(["selected"]):
-        style.theme_use('forest-light')
-    else:
-        style.theme_use('forest-dark')
+    num_spinbox.delete(0,'end')
+    num_spinbox.insert(0, "num")
+
+    dep_pack.set(deplist[0])
+
+    checkbutton.state(["!selected"])
 
 #frontend
 #stating a window
@@ -57,17 +70,16 @@ widgets_frame = ttk.LabelFrame(frame, text="Insira os dados")
 widgets_frame.grid(column=0, row=0, padx=10, pady=10, sticky="nsew")
 
 #input informations
-name_entry = ttk.Entry(widgets_frame, width=40)
-name_entry.insert(0, "Produto...")
-name_entry.bind("<FocusIn>", lambda event:name_entry.delete(0, "end"))
-name_entry.grid(column=0, row=0, padx=5, pady=5, sticky="ew", columnspan=2)
+name_entry = ttk.Combobox(widgets_frame, values=TpMaterial)
+name_entry.set("Tipo de material")
+name_entry.grid(column=0, row=0, padx=5, pady=5, sticky="ew", columnspan=1)
 
 num_spinbox = ttk.Spinbox(widgets_frame, from_=0, to =10000, width=6)
 num_spinbox.insert(0, "Qnt")
 num_spinbox.grid(column=3, row=0, padx=5, pady=5, sticky="ew")
 
-dep = ["Cerpat","Cerest", "VIEP", "VISA", "Ambiental", "Laboratório", "Zoonoses", "Endemias"]
-dep_pack = ttk.Combobox(widgets_frame, values=dep, width=30)
+deplist = ["CERPAT","CEREST", "V. Epidemiológica", "V. Sanitária", "V.Ambiental", "Laboratório", "Zoonoses", "Endemias"]
+dep_pack = ttk.Combobox(widgets_frame, values=deplist)
 dep_pack.set("Departamentos...")
 dep_pack.grid(column=0, row=1, padx=5, pady=5, sticky="ew")
 
@@ -75,14 +87,11 @@ a = tk.BooleanVar()
 checkbutton = ttk.Checkbutton(widgets_frame, text="Teste Covid", variable=a)
 checkbutton.grid(column=4, row=0, padx=5, pady=5,sticky="nsew")
 
-button = ttk.Button(widgets_frame, text="Inserir Dados".upper(), command=insert_data)
-button.grid(column=0, row=2, padx=5, pady=5,sticky="nsew")
+buttoninput = ttk.Button(widgets_frame, text="Inserir Dados".upper(), command=insert_data)
+buttoninput.grid(column=0, row=2, padx=5, pady=5, sticky="nsew")
 
 separator = ttk.Separator(widgets_frame)
 separator.grid (column=0, row=3, padx=5, pady=10, sticky="nsew",columnspan=5)
-
-mode_switch = ttk.Checkbutton(widgets_frame, text="Modo", style="Switch", command=mode_theme)
-mode_switch.grid(column=0, row=6, padx=5, pady=10, sticky="nsew")
 
 #Creating previwer
 tree_frame = ttk.Frame(frame)
@@ -90,18 +99,17 @@ tree_frame.grid(column=1, row=0, padx=(0,20), pady=(10))
 tree_scrollbar = ttk.Scrollbar(tree_frame)
 tree_scrollbar.pack(side="right", fill="y")
 
-cols = ("Produto","Departamento","Quantidade","Valor unitário")
+cols = ("Produto","Quantidade","Departamento","Valor unitário")
 treeview = ttk.Treeview(tree_frame, show="headings", yscrollcommand=tree_scrollbar.set, columns = cols, height=13)
 
-treeview.column("Produto", width=100)
-treeview.column("Departamento", width=100)
-treeview.column("Quantidade", width=50)
-treeview.column("Valor unitário", width=50)
+treeview.column("Produto", width=150)
+treeview.column("Departamento", width=120)
+treeview.column("Quantidade", width=100)
+treeview.column("Valor unitário", width=100)
 treeview.pack()
 tree_scrollbar.config(command=treeview.yview)
 
+load_data()
+
 #runing a window
 root.mainloop()
-
-
-
