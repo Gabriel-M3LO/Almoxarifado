@@ -2,6 +2,7 @@ import openpyxl
 import tkinter as tk
 from tkinter import ttk
 import pandas as pd
+import customtkinter as ctk
 
 
 #Pandas
@@ -24,7 +25,7 @@ def load_data():
     for values_tuple in list_values[0:]:
         treeview.insert('',tk.END, values = values_tuple[0:])
 def insert_data():
-    nome = name_entry.get()
+    nome = material_entry.get()
     qnt = int(num_spinbox.get())
     Departamento = dep_pack.get()
     Tcovid = "Teste Covid" if a.get() else "Material"
@@ -41,8 +42,8 @@ def insert_data():
     treeview.insert('', tk.END, values=row_values)
 
     #Clear form
-    name_entry.delete(0,'end')
-    name_entry.insert(0, "name")
+    material_entry.delete(0, 'end')
+    material_entry.insert(0, "name")
 
     num_spinbox.delete(0,'end')
     num_spinbox.insert(0, "num")
@@ -53,8 +54,11 @@ def insert_data():
 
 #frontend
 #stating a window
-root = tk.Tk()
+root = ctk.CTk()
 root.title("Almoxarifado")
+
+def login ():
+    root.geometry("400x500")
 
 #configuring the theme
 style = ttk.Style(root)
@@ -70,18 +74,23 @@ widgets_frame = ttk.LabelFrame(frame, text="Insira os dados")
 widgets_frame.grid(column=0, row=0, padx=10, pady=10, sticky="nsew")
 
 #input informations
-name_entry = ttk.Combobox(widgets_frame, values=TpMaterial)
-name_entry.set("Tipo de material")
-name_entry.grid(column=0, row=0, padx=5, pady=5, sticky="ew", columnspan=1)
+material_entry = ttk.Combobox(widgets_frame, values=TpMaterial)
+material_entry.set("Tipo de material")
+material_entry.grid(column=0, row=0, padx=5, pady=5, sticky="ew")
+
+name_entry = ttk.Entry(widgets_frame, width=50)
+name_entry.insert(0, "Produto...")
+#name_entry.bind("<FocusIn>", lambda event:name_entry.delete(0, "end"))
+name_entry.grid(column=1, row=0, padx=5, pady=5, sticky="ew", columnspan=2)
 
 num_spinbox = ttk.Spinbox(widgets_frame, from_=0, to =10000, width=6)
 num_spinbox.insert(0, "Qnt")
-num_spinbox.grid(column=3, row=0, padx=5, pady=5, sticky="ew")
+num_spinbox.grid(column=0, row=1, padx=5, pady=5, sticky="ew")
 
 deplist = ["CERPAT","CEREST", "V. Epidemiológica", "V. Sanitária", "V.Ambiental", "Laboratório", "Zoonoses", "Endemias"]
 dep_pack = ttk.Combobox(widgets_frame, values=deplist)
 dep_pack.set("Departamentos...")
-dep_pack.grid(column=0, row=1, padx=5, pady=5, sticky="ew")
+dep_pack.grid(column=1, row=1, padx=5, pady=5, sticky="ew")
 
 a = tk.BooleanVar()
 checkbutton = ttk.Checkbutton(widgets_frame, text="Teste Covid", variable=a)
@@ -110,6 +119,5 @@ treeview.pack()
 tree_scrollbar.config(command=treeview.yview)
 
 load_data()
-
 #runing a window
 root.mainloop()
