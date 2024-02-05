@@ -4,20 +4,21 @@ from tkinter import ttk
 import pandas as pd
 import customtkinter as ctk
 
-
 #Pandas
 tb = pd.read_excel('tabelas.xlsx')
 TpMaterial = ["Escritório", "Penso", "Limpeza"]
+tb["Material"] = tb["Material"].astype('str')
+print(tb.dtypes)
 
 
 #backend
 def load_data():
-    path = r"C:\Users\gabri\Documents\Almoxarifado\Almoxarifado\bd.xlsx"
+    path = r"C:\Users\gabri\Downloads\Almoxarifado\bd.xlsx"
     wb = openpyxl.load_workbook(path)
     sheet = wb.active
 
-    list_values = list(sheet.values)
-    print(list_values)
+    list_values = list(tb['Produtos'])
+    print(tb['Produtos'])
 
     for col_name in cols:
         treeview.heading(col_name, text=col_name)
@@ -78,10 +79,15 @@ material_entry = ttk.Combobox(widgets_frame, values=TpMaterial)
 material_entry.set("Tipo de material")
 material_entry.grid(column=0, row=0, padx=5, pady=5, sticky="ew")
 
-name_entry = ttk.Entry(widgets_frame, width=50)
-name_entry.insert(0, "Produto...")
+filtro = tb[tb['material'].srt('escritorio')]
+material_list = sorted(filtro['Produtos'].unique())
+
+#if ()
+
+produto_entry = ttk.Combobox(widgets_frame, width=50, values=material_list)
+produto_entry.insert(0, "Produto...")
 #name_entry.bind("<FocusIn>", lambda event:name_entry.delete(0, "end"))
-name_entry.grid(column=1, row=0, padx=5, pady=5, sticky="ew", columnspan=2)
+produto_entry.grid(column=1, row=0, padx=5, pady=5, sticky="ew", columnspan=2)
 
 num_spinbox = ttk.Spinbox(widgets_frame, from_=0, to =10000, width=6)
 num_spinbox.insert(0, "Qnt")
@@ -108,16 +114,19 @@ tree_frame.grid(column=1, row=0, padx=(0,20), pady=(10))
 tree_scrollbar = ttk.Scrollbar(tree_frame)
 tree_scrollbar.pack(side="right", fill="y")
 
-cols = ("Produto","Quantidade","Departamento","Valor unitário")
+#cols = ("Produto","Quantidade","Departamento","Valor unitário")
+cols = ("Produto","tp_material")
 treeview = ttk.Treeview(tree_frame, show="headings", yscrollcommand=tree_scrollbar.set, columns = cols, height=13)
 
 treeview.column("Produto", width=150)
-treeview.column("Departamento", width=120)
-treeview.column("Quantidade", width=100)
-treeview.column("Valor unitário", width=100)
+treeview.column("tp_material", width=120)
+#treeview.column("Departamento", width=120)
+#treeview.column("Quantidade", width=100)
+#treeview.column("Valor unitário", width=100)
 treeview.pack()
 tree_scrollbar.config(command=treeview.yview)
 
 load_data()
+
 #runing a window
 root.mainloop()
